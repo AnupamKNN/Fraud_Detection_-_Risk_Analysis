@@ -1,3 +1,70 @@
 fdenv
 ML_research_notebooks/Cleaned_Data/creditcard_cleaned.csv
 ML_research_notebooks/Data/creditcard.csv
+
+ Python cache and compiled files
+__pycache__/
+*.py[cod]
+*.so
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Environment folders
+.env/
+fdenv/
+venv/
+.envrc
+
+# IDE/config files
+.vscode/
+.idea/
+*.swp
+
+# Logs
+logs/
+*.log
+
+# Ignore large data and model files directly
+*.csv
+*.pkl
+*.joblib
+*.npy
+*.npz
+*.pt
+*.onnx
+*.h5
+
+# Allow DVC and folder structure tracking
+!*.dvc
+!.gitkeep
+
+# (Optional) Ignore experiment outputs
+.experiments/
+checkpoints/
+runs/
+
+# Ignore all files inside Artifacts
+Artifacts/*
+
+# But don't ignore DVC metafiles
+!Artifacts/**/*.dvc
+
+# Optionally, don't ignore directories so Git can track folder structure
+!Artifacts/**/
+
+# Ignore everything in Artifacts
+Artifacts/**
+
+# But allow these:
+!Artifacts/**/*.dvc
+!Artifacts/**/*.dvc.*
+!Artifacts/**/.gitkeep
+!Artifacts/**/
+
+# Ignore Artifacts data, allow DVC files and structure
+Artifacts/**
+!Artifacts/**/*.dvc
+!Artifacts/**/*.dvc.*
+!Artifacts/**/.gitkeep
+!Artifacts/**/
