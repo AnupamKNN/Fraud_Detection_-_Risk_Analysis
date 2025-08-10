@@ -21,3 +21,6 @@ imblearn
 catboost
 shap
 tqdm
+pymongo[srv]
+pymongo
+certifi
