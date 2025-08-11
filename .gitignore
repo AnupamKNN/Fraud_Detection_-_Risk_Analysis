@@ -1,6 +1,7 @@
 fdenv
 ML_research_notebooks/Cleaned_Data/creditcard_cleaned.csv
 ML_research_notebooks/Data/creditcard.csv
+.env
 
  Python cache and compiled files
 __pycache__/
