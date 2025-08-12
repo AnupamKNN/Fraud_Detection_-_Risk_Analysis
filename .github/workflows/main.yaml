@@ -1,0 +1,62 @@
+name: Train Fraud Detection Model
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  train-model:
+    runs-on: ubuntu-latest
+
+    env:
+      # GitHub Secrets for secure authentication
+      MONGO_DB_URL: ${{ secrets.MONGO_DB_URL }}
+      MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+      MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+      MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+      DVC_REMOTE_URL: ${{ secrets.DVC_REMOTE_URL }}
+      DVC_REMOTE_USER: ${{ secrets.DVC_REMOTE_USER }}
+      DVC_REMOTE_PASSWORD: ${{ secrets.DVC_REMOTE_PASSWORD }}
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v3
+
+      - name: Setup Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Setup DVC
+        uses: iterative/setup-dvc@v1
+
+      - name: Configure DVC Remote for HTTPS Basic Auth
+        run: |
+          dvc remote add origin $DVC_REMOTE_URL || echo "Remote already exists"
+          dvc remote modify origin auth basic
+          dvc remote modify origin user $DVC_REMOTE_USER --local
+          dvc remote modify origin password $DVC_REMOTE_PASSWORD --local
+
+      - name: Pull Data and Artifacts from DVC
+        run: dvc pull
+
+      - name: Run Modular Training Pipeline
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          python src/fraud_detection/pipeline/training_pipeline.py
+
+      - name: Push Updated Artifacts Back to DVC
+        run: |
+          dvc add Artifacts/data_transformation/preprocessor.pkl
+          dvc add Artifacts/features_store/creditcard.csv
+          dvc push
+          git config --global user.email "actions@github.com"
+          git config --global user.name "github-actions[bot]"
+          git add *.dvc .gitignore
+          git commit -m "Update artifacts [CI]" || echo "No changes to commit"
+          git push

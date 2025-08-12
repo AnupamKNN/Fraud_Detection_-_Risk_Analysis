@@ -27,3 +27,4 @@ certifi
 mlflow==2.2.2
 dagshub
 dvc
+pydantic
