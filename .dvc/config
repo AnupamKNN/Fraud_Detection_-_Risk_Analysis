@@ -1,0 +1,4 @@
+[core]
+    remote = origin
+['remote "origin"']
+    url = https://dagshub.com/AnupamKNN/Fraud_Detection_-_Risk_Analysis.dvc

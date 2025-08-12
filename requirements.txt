@@ -24,3 +24,6 @@ tqdm
 pymongo[srv]
 pymongo
 certifi
+mlflow==2.2.2
+dagshub
+dvc
