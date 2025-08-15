@@ -39,7 +39,6 @@ ML_research_notebooks/Data/*.csv
 
 # Ignore CSV and joblib files everywhere else except final_models
 *.csv
-*.joblib
 
 # Allow DVC and folder structure tracking
 !*.dvc
