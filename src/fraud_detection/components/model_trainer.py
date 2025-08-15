@@ -76,9 +76,9 @@ class ModelTrainer:
                     "Random Forest Classifier": RandomForestClassifier(),
                     "AdaBoost Classifier": AdaBoostClassifier(),
                     "Gradient Boosting Classifier": GradientBoostingClassifier(),
-                    "XGB Classifier": XGBClassifier(tree_method='hist', device = 'cuda'),
                     "Decision Tree Classifier": DecisionTreeClassifier(),
-                    "CatBoost Classifier": CatBoostClassifier(task_type="GPU", devices='0')
+                    "CatBoost Classifier": CatBoostClassifier(task_type= "CPU"),
+                    "XGB Classifier": XGBClassifier(tree_method='hist', device = 'cuda')
                 }
             
             params_grid = {
@@ -131,8 +131,8 @@ class ModelTrainer:
                     },
 
                     "AdaBoost Classifier": {
-                        'n_estimators': [50, 100],
-                        'learning_rate': [0.01, 0.1]
+                        'n_estimators': [50, 100, 150, 200],
+                        'learning_rate': [0.01, 0.1, 0.1, 0.2]
                     },
 
                     "Gradient Boosting Classifier": {
@@ -156,7 +156,8 @@ class ModelTrainer:
                         'iterations': [100, 200],
                         'learning_rate': [0.05, 0.1],
                         'depth': [4, 6],
-                        'l2_leaf_reg': [3, 5]
+                        'l2_leaf_reg': [1, 3],
+                        'border_count': [32, 64]
                     }
                 }
 
@@ -210,10 +211,10 @@ class ModelTrainer:
             test_arr = load_numpy_array_data(test_file_path)
 
             X_train, y_train, X_test, y_test = (
-                train_arr[:1000, :-1],
-                train_arr[:1000, -1],
-                test_arr[:1000, :-1],
-                test_arr[:1000, -1]
+                train_arr[:, :-1],
+                train_arr[:, -1],
+                test_arr[:, :-1],
+                test_arr[:, -1]
             )
 
             model_trainer_artifact = self.train_model(X_train= X_train, y_train= y_train, X_test= X_test, y_test= y_test)

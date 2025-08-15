@@ -9,17 +9,14 @@ scikit-learn
 matplotlib
 seaborn
 xgboost
-lightgbm
 python-dotenv
 exceptiongroup 
 pygments 
 stack_data
 oauthlib
 kagglehub
-tensorflow[and-cuda]
 imblearn
 catboost
-shap
 tqdm
 pymongo[srv]
 pymongo
@@ -28,3 +25,7 @@ mlflow==2.2.2
 dagshub
 dvc
 pydantic
+streamlit
+langchain_community
+langchain_groq
+langchain_experimental
