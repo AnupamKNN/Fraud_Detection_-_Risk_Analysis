@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import pickle
+import joblib
 import os
 import io
 import matplotlib.pyplot as plt
@@ -29,7 +29,7 @@ st.title("💳 Credit Card Fraud Detection Dashboard with AI Insights")
 def load_artifacts():
     preprocessor_path = os.path.join("final_models", "preprocessor.pkl")
     model_path = os.path.join("final_models", "model.pkl")
-    return pickle.load(preprocessor_path), pickle.load(model_path)
+    return joblib.load(preprocessor_path), joblib.load(model_path)
 
 preprocessor, model = load_artifacts()
 
