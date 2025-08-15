@@ -28,7 +28,6 @@ logs/
 
 # Ignore large data and model files directly
 *.csv
-*.pkl
 *.joblib
 *.npy
 *.npz
