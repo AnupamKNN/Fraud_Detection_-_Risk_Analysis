@@ -199,7 +199,10 @@ if uploaded_file:
             agent = create_pandas_dataframe_agent(llm, df, verbose=False, allow_dangerous_code=True)
             with st.spinner("Thinking..."):
                 response = agent.run(query)
-            st.write(response)
+            if isinstance(response, pd.DataFrame):
+                st.dataframe(response)
+            else:
+                st.write(response)
 
     # Manual per-record explanation (still available)
     st.subheader("🔎 Explain Any Transaction by Index")
