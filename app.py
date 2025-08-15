@@ -192,17 +192,35 @@ if uploaded_file:
 
     # Natural language queries
     st.subheader("💬 Ask Questions About This Dataset")
-    query = st.text_input("Example: Show all frauds over $1000")
-    if st.button("Run Query with AI"):
+    user_query = st.text_input("Example: Show all frauds over $1000")
+
+    if user_query and st.button("Run Query with AI"):
         llm = get_llm()
         if llm:
+            # Add explicit instruction to query to return a DataFrame
+            query = f"Please return the filtered pandas DataFrame for the following request: {user_query}"
+
             agent = create_pandas_dataframe_agent(llm, df, verbose=False, allow_dangerous_code=True)
             with st.spinner("Thinking..."):
                 response = agent.run(query)
+
             if isinstance(response, pd.DataFrame):
-                st.dataframe(response)
+                # Apply your fraud_color styling to filtered DataFrame
+                styled_response = response.style.applymap(fraud_color, subset=['Fraud_Label'])
+                st.dataframe(styled_response, use_container_width=True)
+
+                # Generate CSV download for filtered data
+                csv_buffer = io.StringIO()
+                response.to_csv(csv_buffer, index=False)
+                st.download_button(
+                    label="📥 Download Filtered Results",
+                    data=csv_buffer.getvalue(),
+                    file_name="filtered_fraud_predictions.csv",
+                    mime="text/csv"
+                )
             else:
                 st.write(response)
+
 
     # Manual per-record explanation (still available)
     st.subheader("🔎 Explain Any Transaction by Index")
