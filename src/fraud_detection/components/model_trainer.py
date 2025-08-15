@@ -97,10 +97,17 @@ class ModelTrainer:
                             'C': [0.1, 1, 10],
                             'max_iter': [100, 200]
                         },
-                        # saga solver with l1, l2, and elasticnet penalties
+                        # saga solver with l1 or l2 penalty (NO l1_ratio)
                         {
                             'solver': ['saga'],
-                            'penalty': ['l1', 'l2', 'elasticnet'],
+                            'penalty': ['l1', 'l2'],
+                            'C': [0.1, 1, 10],
+                            'max_iter': [100, 200]
+                        },
+                        # saga solver with elasticnet penalty (with l1_ratio)
+                        {
+                            'solver': ['saga'],
+                            'penalty': ['elasticnet'],
                             'l1_ratio': [0, 0.5, 1],  # only for elasticnet penalty
                             'C': [0.1, 1, 10],
                             'max_iter': [100, 200]
@@ -160,6 +167,7 @@ class ModelTrainer:
                         'border_count': [32, 64]
                     }
                 }
+
 
             
             model_report, best_models= evaluate_models(X_train= X_train, y_train= y_train, X_test= X_test, y_test= y_test, models = models, param= params_grid)
