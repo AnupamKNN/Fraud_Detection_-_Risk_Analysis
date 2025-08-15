@@ -32,9 +32,8 @@ def load_artifacts():
 
     with open(preprocessor_path, "rb") as f:
         preprocessor = pickle.load(f)
-
     with open(model_path, "rb") as f:
-         model = pickle.load(f)
+        model = pickle.load(f)
 
     return preprocessor, model
 
