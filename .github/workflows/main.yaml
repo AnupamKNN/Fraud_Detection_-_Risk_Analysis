@@ -1,14 +1,21 @@
-name: Fraud Detection Model Training & Deployment
+name: Fraud Detection CI/CD Pipeline
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
-jobs:
-  train-model:
-    runs-on: ubuntu-latest
+env:
+  PYTHON_VERSION: '3.10'
 
+jobs:
+  pull_data:
+    name: 📦 Pull Data & Artifacts from DVC
+    runs-on: ubuntu-latest
+    env:
+      DVC_REMOTE_URL: ${{ secrets.DVC_REMOTE_URL }}
+      DVC_REMOTE_USER: ${{ secrets.DVC_REMOTE_USER }}
+      DVC_REMOTE_PASSWORD: ${{ secrets.DVC_REMOTE_PASSWORD }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -16,23 +23,17 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: ${{ env.PYTHON_VERSION }}
 
       - name: Install dependencies
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Export DVC credentials
-        run: |
-          echo "DVC_REMOTE_URL=${{ secrets.DVC_REMOTE_URL }}" >> $GITHUB_ENV
-          echo "DVC_REMOTE_USER=${{ secrets.DVC_REMOTE_USER }}" >> $GITHUB_ENV
-          echo "DVC_REMOTE_PASSWORD=${{ secrets.DVC_REMOTE_PASSWORD }}" >> $GITHUB_ENV
-
       - name: Set up DVC
         uses: iterative/setup-dvc@v1
 
-      - name: Pull data and artifacts from DVC
+      - name: Configure & Pull from DVC
         run: |
           dvc remote add origin $DVC_REMOTE_URL || echo "Remote exists"
           dvc remote modify origin auth basic
@@ -40,19 +41,50 @@ jobs:
           dvc remote modify origin password $DVC_REMOTE_PASSWORD --local
           dvc pull
 
-      - name: Export MLflow credentials
+  train_model:
+    name: 🤖 Train Model with MLflow
+    runs-on: ubuntu-latest
+    needs: pull_data
+    env:
+      MONGO_DB_URL: ${{ secrets.MONGO_DB_URL }}
+      MLFLOW_TRACKING_URI: ${{ secrets.MLFLOW_TRACKING_URI }}
+      MLFLOW_TRACKING_USERNAME: ${{ secrets.MLFLOW_TRACKING_USERNAME }}
+      MLFLOW_TRACKING_PASSWORD: ${{ secrets.MLFLOW_TRACKING_PASSWORD }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
         run: |
-          echo "MONGO_DB_URL=${{ secrets.MONGO_DB_URL }}" >> $GITHUB_ENV
-          echo "MLFLOW_TRACKING_URI=${{ secrets.MLFLOW_TRACKING_URI }}" >> $GITHUB_ENV
-          echo "MLFLOW_TRACKING_USERNAME=${{ secrets.MLFLOW_TRACKING_USERNAME }}" >> $GITHUB_ENV
-          echo "MLFLOW_TRACKING_PASSWORD=${{ secrets.MLFLOW_TRACKING_PASSWORD }}" >> $GITHUB_ENV
+          pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Run training pipeline
         run: |
           export PYTHONPATH=$PYTHONPATH:$(pwd)
           python src/fraud_detection/pipeline/training_pipeline.py
 
-      - name: Push updated artifacts to DVC
+  push_artifacts:
+    name: 📤 Push Updated Artifacts to DVC
+    runs-on: ubuntu-latest
+    needs: train_model
+    env:
+      DVC_REMOTE_URL: ${{ secrets.DVC_REMOTE_URL }}
+      DVC_REMOTE_USER: ${{ secrets.DVC_REMOTE_USER }}
+      DVC_REMOTE_PASSWORD: ${{ secrets.DVC_REMOTE_PASSWORD }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up DVC
+        uses: iterative/setup-dvc@v1
+
+      - name: Push Artifacts
         run: |
           dvc remote modify origin auth basic
           dvc remote modify origin user $DVC_REMOTE_USER --local
@@ -66,14 +98,13 @@ jobs:
           git commit -m "Update artifacts via CI" || echo "No changes to commit"
           git push
 
-  build-and-push:
+  build_image:
+    name: 🐳 Build & Push to GHCR (Optional for local debug)
     runs-on: ubuntu-latest
-    needs: train-model
-
+    needs: push_artifacts
     permissions:
       contents: read
       packages: write
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -90,12 +121,12 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/anupamknn/fraud_detection_risk_analysis:latest
+          tags: ghcr.io/anupamknn/fraud_detection_-_risk_analysis:latest
 
   deploy:
-    name: Deploy to Environment
+    name: 🚀 Deploy to Environment
     runs-on: ubuntu-latest
-    needs: build-and-push
+    needs: build_image
     steps:
       - name: Deployment Placeholder
         run: echo "Deploying to environment (K8s, ECS, etc.)..."
