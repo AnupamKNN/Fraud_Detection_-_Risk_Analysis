@@ -8,6 +8,7 @@ pandas
 scikit-learn
 matplotlib
 seaborn
+joblib
 xgboost
 python-dotenv
 exceptiongroup 
