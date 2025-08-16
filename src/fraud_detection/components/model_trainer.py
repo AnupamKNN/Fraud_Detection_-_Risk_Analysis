@@ -88,21 +88,21 @@ class ModelTrainer:
                             'solver': ['liblinear'],
                             'penalty': ['l1', 'l2'],
                             'C': [0.1, 1, 10],
-                            'max_iter': [100, 200]
+                            'max_iter': [500, 1000]
                         },
                         # lbfgs solver with l2 or None penalty
                         {
                             'solver': ['lbfgs'],
                             'penalty': ['l2', None],
                             'C': [0.1, 1, 10],
-                            'max_iter': [100, 200]
+                            'max_iter': [500, 1000]
                         },
                         # saga solver with l1 or l2 penalty (NO l1_ratio)
                         {
                             'solver': ['saga'],
                             'penalty': ['l1', 'l2'],
                             'C': [0.1, 1, 10],
-                            'max_iter': [100, 200]
+                            'max_iter': [500, 1000]
                         },
                         # saga solver with elasticnet penalty (with l1_ratio)
                         {
@@ -110,7 +110,7 @@ class ModelTrainer:
                             'penalty': ['elasticnet'],
                             'l1_ratio': [0, 0.5, 1],  # only for elasticnet penalty
                             'C': [0.1, 1, 10],
-                            'max_iter': [100, 200]
+                            'max_iter': [500, 1000]
                         }
                     ],
 
@@ -139,7 +139,7 @@ class ModelTrainer:
 
                     "AdaBoost Classifier": {
                         'n_estimators': [50, 100, 150, 200],
-                        'learning_rate': [0.01, 0.1, 0.1, 0.2]
+                        'learning_rate': [0.01, 0.1, 0.2]
                     },
 
                     "Gradient Boosting Classifier": {
@@ -219,10 +219,10 @@ class ModelTrainer:
             test_arr = load_numpy_array_data(test_file_path)
 
             X_train, y_train, X_test, y_test = (
-                train_arr[:, :-1],
-                train_arr[:, -1],
-                test_arr[:, :-1],
-                test_arr[:, -1]
+                train_arr[:20000, :-1],
+                train_arr[:20000, -1],
+                test_arr[:20000, :-1],
+                test_arr[:20000, -1]
             )
 
             model_trainer_artifact = self.train_model(X_train= X_train, y_train= y_train, X_test= X_test, y_test= y_test)

@@ -84,12 +84,12 @@ def evaluate_models(X_train, y_train, X_test, y_test, models, param)-> dict:
             params = param[model_name]
 
             # RandomizedSearchCV
-            cv = StratifiedKFold(n_splits = 5, shuffle = True, random_state=42)
+            cv = StratifiedKFold(n_splits = 2, shuffle = True, random_state=42)
             if model_name in ["XGB Classifier", "CatBoost Classifier"]:
                 n_jobs = 1
             else:
-                n_jobs = 6
-            rs = RandomizedSearchCV(model, params, cv=cv, n_iter=10, n_jobs=n_jobs, verbose=1, random_state=42)
+                n_jobs = -1
+            rs = RandomizedSearchCV(model, params, cv=cv, n_iter=5, n_jobs=n_jobs, verbose=1, random_state=42)
             rs.fit(X_train, y_train)
 
             y_train_pred = rs.predict(X_train)
