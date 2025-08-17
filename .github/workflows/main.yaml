@@ -59,7 +59,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/anupamknn/fraud_detection_-_risk_analysis:latest
+          tags: ghcr.io/anupamknn/fraud-detection-risk-analytics:latest
 
   deploy:
     name: 🚀 Deploy to Environment
