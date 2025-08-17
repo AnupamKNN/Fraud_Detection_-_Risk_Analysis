@@ -33,13 +33,15 @@ jobs:
       - name: Set up DVC
         uses: iterative/setup-dvc@v1
 
-      - name: Configure & Pull from DVC
+      - name: Configure DVC remote
         run: |
           dvc remote add origin $DVC_REMOTE_URL || echo "Remote exists"
           dvc remote modify origin auth basic
           dvc remote modify origin user $DVC_REMOTE_USER --local
           dvc remote modify origin password $DVC_REMOTE_PASSWORD --local
-          dvc pull
+
+      - name: Pull all required data and artifacts from DVC
+        run: dvc pull
 
   train_model:
     name: 🤖 Train Model with MLflow
@@ -81,20 +83,44 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
       - name: Set up DVC
         uses: iterative/setup-dvc@v1
 
-      - name: Push Artifacts
+      - name: Configure DVC remote
         run: |
+          dvc remote add origin $DVC_REMOTE_URL || echo "Remote exists"
           dvc remote modify origin auth basic
           dvc remote modify origin user $DVC_REMOTE_USER --local
           dvc remote modify origin password $DVC_REMOTE_PASSWORD --local
-          dvc add Artifacts/data_transformation/preprocessor.pkl
-          dvc add Artifacts/data_ingestion/features_store/creditcard.csv
-          dvc push
+
+      - name: Pull latest DVC cache
+        run: dvc pull
+
+      - name: Add and Push Only New/Changed Artifacts
+        run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "github-actions[bot]"
-          git add *.dvc .gitignore
+          # Only add if not already tracked, or if the file is updated.
+          if ! dvc status Artifacts/data_transformation/preprocessor.pkl | grep -q "is up to date"; then
+            dvc add Artifacts/data_transformation/preprocessor.pkl
+            git add Artifacts/data_transformation/preprocessor.pkl.dvc
+          fi
+          if ! dvc status Artifacts/data_ingestion/features_store/creditcard.csv | grep -q "is up to date"; then
+            dvc add Artifacts/data_ingestion/features_store/creditcard.csv
+            git add Artifacts/data_ingestion/features_store/creditcard.csv.dvc
+          fi
+          dvc push
+          git add .gitignore
           git commit -m "Update artifacts via CI" || echo "No changes to commit"
           git push
 
