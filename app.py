@@ -20,7 +20,7 @@ load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 st.set_page_config(page_title="Fraud Detection Dashboard", layout="wide")
-st.title("💳 Credit Card Fraud Detection Dashboard with AI Insights")
+st.title("💳 Fraud Detection Dashboard with AI Insights")
 
 # -------------------------
 # Load model/preprocessor
