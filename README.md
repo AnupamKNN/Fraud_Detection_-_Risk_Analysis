@@ -1,14 +1,16 @@
 ## Fraud Detection & Risk Analytics Platform for ZenithPay Solutions
 
-[Link to Live Project]()
+[Link to Live Project](https://frauddetection-riskanalysis-czzjjkrx6dkp9tzsbj55jc.streamlit.app/)
 
-[Link to Presentation Video]()
+[Link to DagsHub Repository](https://dagshub.com/AnupamKNN/Fraud_Detection_-_Risk_Analysis)
+
+[Link to Presentation Video](https://youtu.be/60J0vSLglvk)
 
 [Link to LinkedIn post]()
 
-[Link to sample dataset to test the application]()
+[Link to sample dataset to test the application](https://drive.google.com/file/d/19hhN7x7NdK38JEpQSWm6o3kJp9s-FYuo/view)
 
-[Link to sample data creation script]()
+[Link to sample data creation script](https://github.com/AnupamKNN/Fraud_Detection_-_Risk_Analysis/blob/main/sample_data_creation.py)
 
 ### 🏢 About the Company
 
