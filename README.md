@@ -6,7 +6,7 @@
 
 [Link to Presentation Video](https://youtu.be/60J0vSLglvk)
 
-[Link to LinkedIn post]()
+[Link to LinkedIn post](https://www.linkedin.com/posts/anupam-singh-1l_genai-ai-machinelearning-activity-7363413661572284416-C13B?utm_source=share&utm_medium=member_desktop&rcm=ACoAACTx8xsBG5OdxDsxposmyvR-JD_HZhoD33I)
 
 [Link to sample dataset to test the application](https://drive.google.com/file/d/19hhN7x7NdK38JEpQSWm6o3kJp9s-FYuo/view)
 
