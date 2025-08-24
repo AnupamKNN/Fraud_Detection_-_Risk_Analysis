@@ -79,8 +79,8 @@ class DataValidation:
             test_file_path = self.data_ingestion_artifact.test_file_path
 
             # read the data from train and test file
-            train_dataframe = DataValidation.read_data(train_file_path)
-            test_dataframe = DataValidation.read_data(test_file_path)
+            train_dataframe = self.read_data(train_file_path)
+            test_dataframe = self.read_data(test_file_path)
 
             # validate number of columns
             status = self.validate_number_of_column(dataframe=train_dataframe)

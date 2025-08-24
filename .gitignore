@@ -56,3 +56,6 @@ Artifacts/**
 !Artifacts/**/.gitkeep
 !Artifacts/**/
 .env
+
+# Ignore extra folders
+ZenithPay

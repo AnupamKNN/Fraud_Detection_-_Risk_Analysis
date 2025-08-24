@@ -65,14 +65,10 @@ class DataTransformation:
     def initiate_data_transformation(self)->DataTransformationArtifact:
         try:
             logging.info("Entered initiate_data_transformation method of Data Transformation class")
-            try:
-                pass
-            except Exception as e:
-                raise FraudDetectionException(e, sys)
             
             # Read training and testing data
-            train_df = DataTransformation.read_data(self.data_validation_artifact.valid_train_file_path)
-            test_df = DataTransformation.read_data(self.data_validation_artifact.valid_test_file_path)
+            train_df = self.read_data(self.data_validation_artifact.valid_train_file_path)
+            test_df = self.read_data(self.data_validation_artifact.valid_test_file_path)
 
             # Extract input_features and target feature for train and test dataframe
             input_feature_train_df = train_df.drop(columns=[TARGET_COLUMN], axis = 1)
