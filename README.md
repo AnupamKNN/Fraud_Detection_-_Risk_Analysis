@@ -297,7 +297,7 @@ The pipeline is designed to automatically deliver the best-performing model from
     E[🚀 Best Model to Production<br><sub>Deploy latest optimal model</sub>]
 
 
-```
+---
 
 ### 🚀 Usage
 
