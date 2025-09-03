@@ -73,6 +73,7 @@ Metric	Projected Outcome
 | **Database** | MongoDB |
 | **CI/CD Pipelines** | GitHub Actions |
 | **Containerization** | Docker, GitHub Container Registry (GHCR) |
+| **LLM Implementation** | LangChain + ChatGroq (model: `llama-3.3-70b-versatile`) |
 
 ---
 
@@ -109,15 +110,24 @@ You have two primary ways to run this application: the recommended **Docker meth
 
 1.  **Pull the Docker Image:**
  The Docker image is pre-built and pushed to GitHub Container Registry (GHCR). Pull it directly:
-    ```bash
-    docker pull ghcr.io/AnupamKNN/fraud_detection_-_risk_analysis:latest
-    ```
+   ```bash
+   docker pull ghcr.io/AnupamKNN/fraud_detection_-_risk_analysis:latest
+   ```
+
+**Or build locally from source:**
+
+   ```bash
+   git clone https://github.com/AnupamKNN/fraud_detection_-_risk_analysis:latest
+   cd fraud_detection_-_risk_analysis
+   
+   docker build -t fraud_detection_-_risk_analysis:latest
+   ```
 
 2.  **Run the Docker Container:**
 Once the image is pulled, you can run the application. The container will listen on map port `8501` on your local machine (adjust if your app uses a different port).
-    ```bash
-    docker run -p 8501:8501 ghcr.io/AnupamKNN/fraud_detection_-_risk_analysis:latest
-    ```
+   ```bash
+   docker run -p 8501:8501 ghcr.io/AnupamKNN/fraud_detection_-_risk_analysis:latest
+   ```
 
 3.  **Access the Application:**
 Navigate to [http://localhost:8501](http://localhost:8501) in your web browser to access the Streamlit dashboard.
@@ -136,13 +146,13 @@ If a manual setup is preferred, follow these steps:
     git clone https://github.com/AnupamKNN/Fraud_Detection_-_Risk_Analysis.git
     ```
 
-2. *** Lcate to the project folder:***
+2. *** Locate to the project folder:***
 
     ```bash
     cd Fraud_Detection_-_Risk_Analysis
     ```
 
-2.  **Create a Virtual Environment and Install Dependencies:**
+3.  **Create a Virtual Environment and Install Dependencies:**
 
  **Using `venv` (recommended for Python projects):**
 
@@ -173,9 +183,27 @@ If a manual setup is preferred, follow these steps:
     pip install -r requirements.txt
     ```
 
-3.  **Run the Application:**
+4) **Configure environment**
+cp .env.example .env
+### 🔑 Environment Variables  
 
-3.  **Run the Application:**
+After copying `.env.example` to `.env`, edit the file and set the required keys:  
+
+- `GROQ_API_KEY=<your_key>`  
+- `LANGCHAIN_API_KEY=<your_key>`  
+- `MLFLOW_TRACKING_USERNAME=<your_username>`  
+- `MLFLOW_TRACKING_PASSWORD=<your_password>`  
+- `MLFLOW_TRACKING_URI=<your_tracking_uri>`  
+
+> **Note:** MLflow credentials are only required for developers or contributors who need experiment tracking.
+
+5) **Ensure artifacts & data exist**
+- final_models/model.keras
+- final_models/preprocessor.pkl
+- templates/config.py has valid HIST_PATH pointing to historical CSV
+
+6) **Run the app**
+streamlit run app.py
 
 
 ### Explanation:
@@ -281,8 +309,8 @@ This project includes a fully automated, production-grade ML pipeline consisting
 
 - `data_ingestion.py` – Fetches and stores raw data.
 - `data_validation.py` – Ensures data quality, schema compliance, and integrity.
-- `data_transformation.py` – Preprocesses and transforms data for model consumption.
-- `model_trainer.py` – Trains and evaluates models.
+- `data_transformation.py` – Preprocesses and transforms data for model consumption and pushes preprocessor for production use.
+- `model_trainer.py` – Trains and evaluates models and pushes the best model based on evaluation metrics.
 
 **Note:**  
 The pipeline is designed to automatically deliver the best-performing model from the latest run based on evaluation metrics, ensuring that production always uses the most optimal version.
@@ -290,11 +318,14 @@ The pipeline is designed to automatically deliver the best-performing model from
 
 ### 📈 Pipeline Flow
 
-    A[📥 Data Ingestion<br> <sub>Fetch & store raw data</sub>] --> 
-    B[✅ Data Validation<br><sub>Check schema & data quality</sub>] --> 
-    C[🔄 Data Transformation<br><sub>Clean & preprocess data</sub>] --> 
-    D[🤖 Model Training & Evaluation<br><sub>Train & compare models</sub>] --> 
-    E[🚀 Best Model to Production<br><sub>Deploy latest optimal model</sub>]
+ ```mermaid
+flowchart LR
+    A[📥 Data Ingestion: Fetch & store raw data] --> 
+    B[✅ Data Validation: Check schema & data quality] --> 
+    C[🔄 Data Transformation: Clean & preprocess data] --> 
+    D[🤖 Model Training & Evaluation: Train & compare models] --> 
+    E[🚀 Best Model to Production: Deploy latest optimal model]
+```
 
 
 ---
@@ -358,5 +389,9 @@ To try out the application, you can:
 
 By default, it creates **5,000 records**, but you can easily modify the script to produce **any number of records** you want.  
 
+
+### Notes & Conventions
+* **Security:** Keep `GROQ_API_KEY`, `LANGCHAIN_API_KEY=<your_key>`, `MLFLOW_TRACKING_USERNAME=<your_username>`, `MLFLOW_TRACKING_PASSWORD=<your_password>` &`MLFLOW_TRACKING_URI=<your_tracking_uri>`  in `.env` (LLM features are optional)
+* **Reproducibility:** Lock versions in `requirements.txt`; track runs with MLflow
 
 [![GitHub Repo Stars](https://img.shields.io/github/stars/anupamknn/fraud_detection_-_risk_analysis?style=social)](https://github.com/anupamknn/fraud_detection_-_risk_analysis)
